@@ -26,7 +26,7 @@ on:
         required: false
         type: string
       commit_to_branch:
-        description: 'Commit models to a branch (optional, default: false)
+        description: 'Commit models to a branch (optional, default: false)'
         required: false
         default: 'false'
         type: choice
