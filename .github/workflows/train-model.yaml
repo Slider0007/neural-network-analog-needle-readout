@@ -25,6 +25,14 @@ on:
         description: 'Raw Images Directory: Enter directory (optional, default: data_raw_all)'
         required: false
         type: string
+      commit_to_branch:
+        description: 'Commit models to a branch (optional, default: false)
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
 
 jobs:
   run-notebook:
@@ -81,6 +89,7 @@ jobs:
 
     - name: Image preparation (Resizing, ...)
       run: |
+        set -e
         source "$PWD/.venv/bin/activate"
         output_notebook="${{ env.MODELDIR }}/01_Image-Preparation_v${{ env.MODELVERSION }}_result.ipynb"
         papermill "01_Image-Preparation.ipynb" "$output_notebook" -p Input_Dir ${{ env.RAWIMAGEDIR }} -p Output_Dir ${{ env.DATASETDIR }} --log-output --log-level INFO --progress-bar
@@ -91,6 +100,7 @@ jobs:
 
     - name: Train model
       run: |
+        set -e
         source "$PWD/.venv/bin/activate"
 
         if [[ "${{ github.event.inputs.script_choice }}" == "Custom Notebook Name" ]]; then
@@ -118,6 +128,7 @@ jobs:
 
     - name: Compare model
       run: |
+        set -e
         source "$PWD/.venv/bin/activate"
         output_notebook="${{ env.MODELDIR }}/03_Compare_Models.ipynb_v${{ env.MODELVERSION }}_result.ipynb"
         papermill "03_Compare_Models.ipynb" "$output_notebook" -p Input_Dir ${{ env.RAWIMAGEDIR }} --log-output --log-level INFO --progress-bar
@@ -131,3 +142,27 @@ jobs:
         name: ${{ env.NOTEBOOK }}_v${{ env.MODELVERSION }}
         path: |
           ${{ env.MODELDIR }}/
+
+    - name: Commit TFLite model files to branch
+      if: ${{ github.event.inputs.commit_to_branch == 'true' }}
+      run: |
+        set -e
+
+        # Configure Git
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+        # Create or switch to the branch
+        BRANCH_NAME="trained-model-${{ env.NOTEBOOK }}-v${{ env.MODELVERSION }}"
+        git fetch origin
+        git switch -c "$BRANCH_NAME" || git switch "$BRANCH_NAME"
+
+        # Add only .tflite files
+        find "${{ env.MODELDIR }}" -type f -name "*.tflite" -exec git add {} +
+
+        if git diff --cached --quiet; then
+          echo "No new .tflite files to commit."
+        else
+          git commit -m "Add TFLite model(s) for ${{ env.NOTEBOOK }} version ${{ env.MODELVERSION }}"
+          git push origin "$BRANCH_NAME"
+        fi
