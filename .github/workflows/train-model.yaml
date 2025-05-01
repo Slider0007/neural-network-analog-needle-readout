@@ -154,50 +154,53 @@ jobs:
         path: |
           ${{ env.MODELDIR }}/
 
-    - name: Commit to current branch
-      if: ${{ github.event.inputs.commit_to_branch == 'true' && github.ref != 'refs/heads/main' }}
-      run: |
-        set -e
+- name: Commit to current branch
+  if: ${{ github.event.inputs.commit_to_branch == 'true' && github.ref != 'refs/heads/main' }}
+  run: |
+    set -e
 
-        # Configure Git
-        git config --global user.name 'github-actions[bot]'
-        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+    # Configure Git
+    git config --global user.name 'github-actions[bot]'
+    git config --global user.email 'github-actions[bot]@users.noreply.github.com'
 
-        # Ensure base model directory exists
-        mkdir -p models
+    # Ensure base model directory exists
+    mkdir -p models
 
-        # Move files from model directory
-        find "${{ env.MODELDIR }}" -type f | while read -r filepath; do
-          filename=$(basename "$filepath")
-          ext="${filename##*.}"
+    # Determine subfolder based on .tflite file
+    subfolder=""
+    tflite_file=$(find "${{ env.MODELDIR }}" -type f -name "*.tflite" | head -n 1)
+    if [[ -n "$tflite_file" ]]; then
+      tflite_name=$(basename "$tflite_file")
+      if [[ "$tflite_name" == *"ana-cont"* ]]; then
+        subfolder="ana-cont"
+      elif [[ "$tflite_name" == *"ana-class100"* ]]; then
+        subfolder="ana-class100"
+      fi
+    fi
 
-          # Determine subfolder by filename
-          subfolder=""
-          if [[ "$filename" == *"ana-cont"* ]]; then
-            subfolder="ana-cont"
-          elif [[ "$filename" == *"ana-class100"* ]]; then
-            subfolder="ana-class100"
-          fi
+    # Set destination base
+    dest="models"
+    [[ -n "$subfolder" ]] && dest="models/$subfolder"
 
-          # Set base destination
-          dest="models"
-          [[ -n "$subfolder" ]] && dest="models/$subfolder"
+    # Move all files accordingly
+    find "${{ env.MODELDIR }}" -type f | while read -r filepath; do
+      filename=$(basename "$filepath")
+      ext="${filename##*.}"
 
-          # Destination path for .tflite vs others
-          if [[ "$ext" == "tflite" ]]; then
-            mkdir -p "$dest"
-            mv "$filepath" "$dest/"
-          else
-            dest_other="$dest/training_details/${{ env.NOTEBOOK_BASENAME }}_v${{ env.MODELVERSION }}"
-            mkdir -p "$dest_other"
-            mv "$filepath" "$dest_other/"
-          fi
-        done
+      if [[ "$ext" == "tflite" ]]; then
+        mkdir -p "$dest"
+        mv "$filepath" "$dest/"
+      else
+        dest_other="$dest/training_details/${{ env.NOTEBOOK_BASENAME }}_v${{ env.MODELVERSION }}"
+        mkdir -p "$dest_other"
+        mv "$filepath" "$dest_other/"
+      fi
+    done
 
-        # Clean up
-        rm -rf "${{ env.MODELDIR }}"
+    # Clean up
+    rm -rf "${{ env.MODELDIR }}"
 
-        # Commit
-        git add models/
-        git commit -m "Add models from ${{ env.NOTEBOOK_BASENAME }}_v${{ env.MODELVERSION }}"
-        git push
+    # Commit
+    git add models/
+    git commit -m "Add models from ${{ env.NOTEBOOK_BASENAME }}_v${{ env.MODELVERSION }}"
+    git push
