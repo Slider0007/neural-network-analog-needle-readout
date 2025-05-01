@@ -85,7 +85,7 @@ jobs:
         if [[ -z "$VERSION" ]]; then
           VERSION=$(date +'%Y%m%d-%H%M')
         fi
-        echo "MODELVERSION=$VERSION" >> $GITHUB_ENV
+        echo "MODELVERSION=\"$VERSION\"" >> $GITHUB_ENV
 
     - name: Image preparation (Resizing, ...)
       run: |
