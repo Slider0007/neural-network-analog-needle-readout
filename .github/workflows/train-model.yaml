@@ -65,44 +65,17 @@ jobs:
         pip install jupyter nbconvert papermill
         pip install -r requirements.txt
 
-    - name: Set and prepare folders
-      run: | 
-        if [ -n "${{ github.event.inputs.rawimage_dir }}" ]; then
-          echo "RAWIMAGEDIR=${{ github.event.inputs.rawimage_dir }}" >> $GITHUB_ENV
-        else
-          echo "RAWIMAGEDIR=data_raw_all" >> $GITHUB_ENV
-        fi
-
-        mkdir -p data_resize_all/
-        echo "DATASETDIR=data_resize_all" >> $GITHUB_ENV
-
-        mkdir -p models_tmp/
-        echo "MODELDIR=models_tmp" >> $GITHUB_ENV
-
-    - name: Set model version
-      run: | 
-        VERSION="${{ github.event.inputs.tflite_version }}"
-        if [[ -z "$VERSION" ]]; then
-          VERSION=$(date +'%Y%m%d-%H%M')
-        fi
-        echo "MODELVERSION=\"$VERSION\"" >> $GITHUB_ENV
-
-    - name: Image preparation (Resizing, ...)
+    - name: Prepare environment
       run: |
-        set -e
-        source "$PWD/.venv/bin/activate"
-        output_notebook="${{ env.MODELDIR }}/01_Image-Preparation_v${{ env.MODELVERSION }}_result.ipynb"
-        papermill "01_Image-Preparation.ipynb" "$output_notebook" -p Input_Dir "${{ env.RAWIMAGEDIR }}" -p Output_Dir "${{ env.DATASETDIR }}" --log-output --log-level INFO --progress-bar
-        
-        # Convert the output notebook to HTML
-        jupyter nbconvert "$output_notebook" --to html --output-dir="${{ env.MODELDIR }}/"
-      shell: bash
+        # Prepare model version
+        version="${{ github.event.inputs.tflite_version }}"
+        if [[ -z "$version" ]]; then
+          version=$(date +'%Y%m%d-%H%M')
+        fi
+        echo "MODELVERSION=\"$version\"" >> $GITHUB_ENV
 
-    - name: Train model
-      run: |
-        set -e
-        source "$PWD/.venv/bin/activate"
 
+        # Check notebook
         if [[ "${{ github.event.inputs.script_choice }}" == "Custom Notebook Name" ]]; then
           # Add .ipynb extension if not provided
           notebook="${{ github.event.inputs.custom_name }}"
@@ -114,37 +87,74 @@ jobs:
             echo "Error: Notebook '$notebook' not found!"
             exit 1
           fi
-          output_notebook="${{ env.MODELDIR }}/$(basename "$notebook" .ipynb)_v${{ env.MODELVERSION }}_result.ipynb"
-          echo "NOTEBOOK=$(basename $notebook .ipynb | cut -c 10-)" >> $GITHUB_ENV
-          papermill "$notebook" "$output_notebook" -p TFlite_Version "${{ env.MODELVERSION }}" -p Output_Dir "${{ env.MODELDIR }}" --log-output --log-level INFO --progress-bar
+          echo "NOTEBOOK=\"$notebook\"" >> $GITHUB_ENV
+          echo "NOTEBOOK_BASENAME=$(basename $notebook .ipynb | cut -c 10-)" >> $GITHUB_ENV
         else
-          output_notebook="${{ env.MODELDIR }}/$(basename "${{ github.event.inputs.script_choice }}" .ipynb)_v${{ env.MODELVERSION }}_result.ipynb"
-          echo "NOTEBOOK=$(basename "${{ github.event.inputs.script_choice }}" .ipynb | cut -c 10-)" >> $GITHUB_ENV
-          papermill "${{ github.event.inputs.script_choice }}" "$output_notebook" -p TFlite_Version "${{ env.MODELVERSION }}" -p Output_Dir "${{ env.MODELDIR }}" --log-output --log-level INFO --progress-bar
+          if [[ ! -f "${{ github.event.inputs.script_choice }}" ]]; then
+            echo "Error: Notebook '${{ github.event.inputs.script_choice }}' not found!"
+            exit 1
+          fi
+          echo "NOTEBOOK=\"${{ github.event.inputs.script_choice }}\"" >> $GITHUB_ENV
+          echo "NOTEBOOK_BASENAME=$(basename \"${{ github.event.inputs.script_choice }}\" .ipynb | cut -c 10-)" >> $GITHUB_ENV
         fi
 
-        # Convert the output notebook to HTML
-        jupyter nbconvert "$output_notebook" --to html --output-dir="${{ env.MODELDIR }}/"
 
-    - name: Compare model
+        # Prepare folder structure
+        if [ -n "${{ github.event.inputs.rawimage_dir }}" ]; then
+          echo "RAWIMAGEDIR=${{ github.event.inputs.rawimage_dir }}" >> $GITHUB_ENV
+        else
+          echo "RAWIMAGEDIR=data_raw_all" >> $GITHUB_ENV
+        fi
+
+        mkdir -p data_resize_all/
+        echo "DATASETDIR=data_resize_all" >> $GITHUB_ENV
+
+        mkdir -p models_tmp/
+        echo "MODELDIR=\"models_tmp\"" >> $GITHUB_ENV
+        echo "MODELDIR_TRAINING_DETAILS=\"\models_tmp/training_details/${{ env.NOTEBOOK_BASENAME }}_v${{ env.MODELVERSION }}\"" >> $GITHUB_ENV
+
+    - name: Prepare image dataset (Image loading, resizing, ...)
       run: |
         set -e
         source "$PWD/.venv/bin/activate"
-        output_notebook="${{ env.MODELDIR }}/03_Compare_Models.ipynb_v${{ env.MODELVERSION }}_result.ipynb"
+        output_notebook="${{ env.MODELDIR_TRAINING_DETAILS }}/01_Image-Preparation_result_v${{ env.MODELVERSION }}.ipynb"
+        papermill "01_Image-Preparation.ipynb" "$output_notebook" -p Input_Dir "${{ env.RAWIMAGEDIR }}" -p Output_Dir "${{ env.DATASETDIR }}" --log-output --log-level INFO --progress-bar
+        
+        # Convert the output notebook to HTML
+        jupyter nbconvert "$output_notebook" --to html --output-dir="${{ env.MODELDIR_TRAINING_DETAILS }}/"
+      shell: bash
+
+    - name: Train model
+      run: |
+        set -e
+        source "$PWD/.venv/bin/activate"
+
+        output_notebook="${{ env.MODELDIR_TRAINING_DETAILS }}/${{ env.NOTEBOOK }}_result_v${{ env.MODELVERSION }}.ipynb"
+        papermill "${{ env.NOTEBOOK }}" "$output_notebook" -p TFlite_Version "${{ env.MODELVERSION }}" -p Output_Dir "${{ env.MODELDIR }}" --log-output --log-level INFO --progress-bar
+
+        # Convert the output notebook to HTML
+        jupyter nbconvert "$output_notebook" --to html --output-dir="${{ env.MODELDIR_TRAINING_DETAILS }}/"
+
+    - name: Compare models
+      run: |
+        set -e
+        source "$PWD/.venv/bin/activate"
+
+        output_notebook="${{ env.MODELDIR_TRAINING_DETAILS }}/03_Compare_Models.ipynb_result_v${{ env.MODELVERSION }}.ipynb"
         papermill "03_Compare_Models.ipynb" "$output_notebook" -p Input_Dir "${{ env.RAWIMAGEDIR }}" --log-output --log-level INFO --progress-bar
 
         # Convert the output notebook to HTML
-        jupyter nbconvert "$output_notebook" --to html --output-dir="${{ env.MODELDIR }}/"
+        jupyter nbconvert "$output_notebook" --to html --output-dir="${{ env.MODELDIR_TRAINING_DETAILS }}/"
 
-    - name: Upload model as artifact
+    - name: Upload models as artifact
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ env.NOTEBOOK }}_v${{ env.MODELVERSION }}
+        name: ${{ env.NOTEBOOK_BASENAME }}_v${{ env.MODELVERSION }}
         path: |
           ${{ env.MODELDIR }}/
 
-    - name: Commit TFLite model files to branch
-      if: ${{ github.event.inputs.commit_to_branch == 'true' }}
+    - name: Commit to current branch
+      if: ${{ github.event.inputs.commit_to_branch == 'true' && github.ref != 'refs/heads/main' }}
       run: |
         set -e
 
@@ -152,17 +162,21 @@ jobs:
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
 
-        # Create or switch to the branch
-        BRANCH_NAME="trained-model-${{ env.NOTEBOOK }}-v${{ env.MODELVERSION }}"
-        git fetch origin
-        git switch -c "$BRANCH_NAME" || git switch "$BRANCH_NAME"
+        # Ensure /models directory exists
+        mkdir -p models
 
-        # Add only .tflite files
-        find "${{ env.MODELDIR }}" -type f -name "*.tflite" -exec git add {} +
+        # Move all contents from MODELDIR (including subdirectories) to /models
+        mv "${{ env.MODELDIR }}"/* models/
+
+        # Remove the original model directory
+        rm -rf "${{ env.MODELDIR }}"
+
+        # Stage changes
+        git add models/
 
         if git diff --cached --quiet; then
-          echo "No new .tflite files to commit."
+          echo "No new model files to commit."
         else
-          git commit -m "Add TFLite model(s) for ${{ env.NOTEBOOK }} version ${{ env.MODELVERSION }}"
-          git push origin "$BRANCH_NAME"
+          git commit -m "Add models from ${{ env.NOTEBOOK_BASENAME }}_v${{ env.MODELVERSION }}"
+          git push
         fi
