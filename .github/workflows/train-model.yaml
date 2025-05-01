@@ -96,7 +96,7 @@ jobs:
           fi
           echo "NOTEBOOK=\"${{ github.event.inputs.script_choice }}\"" >> $GITHUB_ENV
           # Extract notebook name without extention and cut "02_Train-"
-          echo "NOTEBOOK_BASENAME=$(basename \"${{ github.event.inputs.script_choice }}\" .ipynb | cut -c 11-)" >> $GITHUB_ENV
+          echo "NOTEBOOK_BASENAME=$(basename \"${{ github.event.inputs.script_choice }}\" .ipynb) | cut -c 11-" >> $GITHUB_ENV
         fi
 
 
@@ -107,10 +107,10 @@ jobs:
           echo "RAWIMAGEDIR=\"data_raw_all\"" >> $GITHUB_ENV
         fi
 
-        mkdir -p \"data_resize_all\"/
+        mkdir -p data_resize_all/
         echo "DATASETDIR=\"data_resize_all\"" >> $GITHUB_ENV
 
-        mkdir -p \"models_tmp\"/
+        mkdir -p models_tmp/
         echo "MODELDIR=\"models_tmp\"" >> $GITHUB_ENV
 
     - name: Prepare image dataset (Image loading, resizing, ...)
