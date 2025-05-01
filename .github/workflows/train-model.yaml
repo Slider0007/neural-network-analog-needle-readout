@@ -96,7 +96,7 @@ jobs:
           fi
           echo "NOTEBOOK=\"${{ github.event.inputs.script_choice }}\"" >> $GITHUB_ENV
           # Extract notebook name without extention from selection and cut "02_Train-CNN"
-          echo "NOTEBOOK_BASENAME=\"$(basename "${{ github.event.inputs.script_choice }}" .ipynb | cut -c 14-)" >> $GITHUB_ENV
+          echo "NOTEBOOK_BASENAME=\"$(basename "${{ github.event.inputs.script_choice }}" .ipynb | cut -c 14-)\"" >> $GITHUB_ENV
         fi
 
 
@@ -128,9 +128,9 @@ jobs:
     - name: Train model
       run: |
         set -e
-        source "$PWD/.venv/bin/activate"
+        source "$PWD/.venv/bin/activate"$(basename "${{ github.event.inputs.script_choice }}" .ipynb
 
-        output_notebook="${{ env.MODELDIR }}/${{ env.NOTEBOOK }}_result_v${{ env.MODELVERSION }}.ipynb"
+        output_notebook="${{ env.MODELDIR }}/$(basename {{ env.NOTEBOOK }} .ipynb)_result_v${{ env.MODELVERSION }}.ipynb"
         papermill "${{ env.NOTEBOOK }}" "$output_notebook" -p TFlite_Version ${{ env.MODELVERSION }} -p Output_Dir ${{ env.MODELDIR }} --log-output --log-level INFO --progress-bar
 
         # Convert the output notebook to HTML
