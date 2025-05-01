@@ -76,8 +76,8 @@ jobs:
         mkdir -p data_resize_all/
         echo "DATASETDIR=data_resize_all" >> $GITHUB_ENV
 
-        mkdir -p models_action/
-        echo "MODELDIR=models_action" >> $GITHUB_ENV
+        mkdir -p models_tmp/
+        echo "MODELDIR=models_tmp" >> $GITHUB_ENV
 
     - name: Set model version
       run: | 
