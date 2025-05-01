@@ -76,8 +76,8 @@ jobs:
         mkdir -p data_resize_all/
         echo "DATASETDIR=data_resize_all" >> $GITHUB_ENV
 
-        mkdir -p models/
-        echo "MODELDIR=models" >> $GITHUB_ENV
+        mkdir -p models_action/
+        echo "MODELDIR=models_action" >> $GITHUB_ENV
 
     - name: Set model version
       run: | 
@@ -92,10 +92,10 @@ jobs:
         set -e
         source "$PWD/.venv/bin/activate"
         output_notebook="${{ env.MODELDIR }}/01_Image-Preparation_v${{ env.MODELVERSION }}_result.ipynb"
-        papermill "01_Image-Preparation.ipynb" "$output_notebook" -p Input_Dir ${{ env.RAWIMAGEDIR }} -p Output_Dir ${{ env.DATASETDIR }} --log-output --log-level INFO --progress-bar
+        papermill "01_Image-Preparation.ipynb" "$output_notebook" -p Input_Dir "${{ env.RAWIMAGEDIR }}" -p Output_Dir "${{ env.DATASETDIR }}" --log-output --log-level INFO --progress-bar
         
         # Convert the output notebook to HTML
-        jupyter nbconvert "$output_notebook" --to html --output-dir=${{ env.MODELDIR }}/
+        jupyter nbconvert "$output_notebook" --to html --output-dir="${{ env.MODELDIR }}/"
       shell: bash
 
     - name: Train model
@@ -116,25 +116,25 @@ jobs:
           fi
           output_notebook="${{ env.MODELDIR }}/$(basename "$notebook" .ipynb)_v${{ env.MODELVERSION }}_result.ipynb"
           echo "NOTEBOOK=$(basename $notebook .ipynb | cut -c 10-)" >> $GITHUB_ENV
-          papermill "$notebook" "$output_notebook" -p TFlite_Version ${{ env.MODELVERSION }} -p Output_Dir ${{ env.MODELDIR }} --log-output --log-level INFO --progress-bar
+          papermill "$notebook" "$output_notebook" -p TFlite_Version "${{ env.MODELVERSION }}" -p Output_Dir "${{ env.MODELDIR }}" --log-output --log-level INFO --progress-bar
         else
           output_notebook="${{ env.MODELDIR }}/$(basename "${{ github.event.inputs.script_choice }}" .ipynb)_v${{ env.MODELVERSION }}_result.ipynb"
           echo "NOTEBOOK=$(basename "${{ github.event.inputs.script_choice }}" .ipynb | cut -c 10-)" >> $GITHUB_ENV
-          papermill "${{ github.event.inputs.script_choice }}" "$output_notebook" -p TFlite_Version ${{ env.MODELVERSION }} -p Output_Dir ${{ env.MODELDIR }} --log-output --log-level INFO --progress-bar
+          papermill "${{ github.event.inputs.script_choice }}" "$output_notebook" -p TFlite_Version "${{ env.MODELVERSION }}" -p Output_Dir "${{ env.MODELDIR }}" --log-output --log-level INFO --progress-bar
         fi
 
         # Convert the output notebook to HTML
-        jupyter nbconvert "$output_notebook" --to html --output-dir=${{ env.MODELDIR }}/
+        jupyter nbconvert "$output_notebook" --to html --output-dir="${{ env.MODELDIR }}/"
 
     - name: Compare model
       run: |
         set -e
         source "$PWD/.venv/bin/activate"
         output_notebook="${{ env.MODELDIR }}/03_Compare_Models.ipynb_v${{ env.MODELVERSION }}_result.ipynb"
-        papermill "03_Compare_Models.ipynb" "$output_notebook" -p Input_Dir ${{ env.RAWIMAGEDIR }} --log-output --log-level INFO --progress-bar
+        papermill "03_Compare_Models.ipynb" "$output_notebook" -p Input_Dir "${{ env.RAWIMAGEDIR }}" --log-output --log-level INFO --progress-bar
 
         # Convert the output notebook to HTML
-        jupyter nbconvert "$output_notebook" --to html --output-dir=${{ env.MODELDIR }}/
+        jupyter nbconvert "$output_notebook" --to html --output-dir="${{ env.MODELDIR }}/"
 
     - name: Upload model as artifact
       uses: actions/upload-artifact@v4
