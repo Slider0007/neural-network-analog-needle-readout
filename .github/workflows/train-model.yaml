@@ -130,7 +130,7 @@ jobs:
         set -e
         source "$PWD/.venv/bin/activate"$(basename "${{ github.event.inputs.script_choice }}" .ipynb
 
-        output_notebook="${{ env.MODELDIR }}/$(basename {{ env.NOTEBOOK }} .ipynb)_result_v${{ env.MODELVERSION }}.ipynb"
+        output_notebook="${MODELDIR}/$(basename "$NOTEBOOK" .ipynb)_result_v${MODELVERSION}.ipynb"
         papermill "${{ env.NOTEBOOK }}" "$output_notebook" -p TFlite_Version ${{ env.MODELVERSION }} -p Output_Dir ${{ env.MODELDIR }} --log-output --log-level INFO --progress-bar
 
         # Convert the output notebook to HTML
