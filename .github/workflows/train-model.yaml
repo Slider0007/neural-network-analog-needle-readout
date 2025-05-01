@@ -68,11 +68,11 @@ jobs:
     - name: Prepare environment
       run: |
         # Prepare model version
-        version="${{ github.event.inputs.tflite_version }}"
+        version=${{ github.event.inputs.tflite_version }}
         if [[ -z "$version" ]]; then
           version=$(date +'%Y%m%d-%H%M')
         fi
-        echo "MODELVERSION=\"$version\"" >> $GITHUB_ENV
+        echo "MODELVERSION=$version" >> $GITHUB_ENV
 
 
         # Check notebook
@@ -87,22 +87,22 @@ jobs:
             echo "Error: Notebook '$notebook' not found!"
             exit 1
           fi
-          echo "NOTEBOOK=\"$notebook\"" >> $GITHUB_ENV
-          echo "NOTEBOOK_BASENAME=\"$(basename $notebook .ipynb)\"" >> $GITHUB_ENV
+          echo "NOTEBOOK=$notebook" >> $GITHUB_ENV
+          echo "NOTEBOOK_BASENAME=$(basename $notebook .ipynb)" >> $GITHUB_ENV
         else
           if [[ ! -f "${{ github.event.inputs.script_choice }}" ]]; then
             echo "Error: Notebook '${{ github.event.inputs.script_choice }}' not found!"
             exit 1
           fi
-          echo "NOTEBOOK=\"${{ github.event.inputs.script_choice }}\"" >> $GITHUB_ENV
+          echo "NOTEBOOK=${{ github.event.inputs.script_choice }}" >> $GITHUB_ENV
           # Extract notebook name without extention from selection and cut "02_Train-CNN"
-          echo "NOTEBOOK_BASENAME=\"$(basename "${{ github.event.inputs.script_choice }}" .ipynb | cut -c 14-)\"" >> $GITHUB_ENV
+          echo "NOTEBOOK_BASENAME=$(basename "${{ github.event.inputs.script_choice }}" .ipynb | cut -c 14-)" >> $GITHUB_ENV
         fi
 
 
         # Prepare folder structure
         if [ -n "${{ github.event.inputs.rawimage_dir }}" ]; then
-          echo "RAWIMAGEDIR=\"${{ github.event.inputs.rawimage_dir }}\"" >> $GITHUB_ENV
+          echo "RAWIMAGEDIR=${{ github.event.inputs.rawimage_dir }}" >> $GITHUB_ENV
         else
           echo "RAWIMAGEDIR=data_raw_all" >> $GITHUB_ENV
         fi
@@ -131,7 +131,7 @@ jobs:
         source "$PWD/.venv/bin/activate"
 
         output_notebook="${{ env.MODELDIR }}/${{ env.NOTEBOOK }}_result_v${{ env.MODELVERSION }}.ipynb"
-        papermill ${{ env.NOTEBOOK }} $output_notebook -p TFlite_Version ${{ env.MODELVERSION }} -p Output_Dir ${{ env.MODELDIR }} --log-output --log-level INFO --progress-bar
+        papermill ${{ env.NOTEBOOK }} $output_notebook -p TFlite_Version "${{ env.MODELVERSION }}" -p Output_Dir ${{ env.MODELDIR }} --log-output --log-level INFO --progress-bar
 
         # Convert the output notebook to HTML
         jupyter nbconvert $output_notebook --to html --output-dir=${{ env.MODELDIR }}/
