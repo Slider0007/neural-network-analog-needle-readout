@@ -95,8 +95,8 @@ jobs:
             exit 1
           fi
           echo "NOTEBOOK=\"${{ github.event.inputs.script_choice }}\"" >> $GITHUB_ENV
-          # Extract notebook name without extention and cut "02_Train-"
-          echo "NOTEBOOK_BASENAME=$(basename "${{ github.event.inputs.script_choice }}" .ipynb | cut -c 11-) >> $GITHUB_ENV
+          # Extract notebook name without extention from selection and cut "02_Train-"
+          echo "NOTEBOOK_BASENAME=$(basename "${{ github.event.inputs.script_choice }}" .ipynb | cut -c 11-)" >> $GITHUB_ENV
         fi
 
 
