@@ -72,7 +72,12 @@ jobs:
 
         for img in $(ls "${{ env.MODELDIR }}"/*.png | sort); do
           fname=$(basename "$img")
-          echo "![${fname}](./${fname})" >> "models/README.md"
+          
+          # Base64 encode the image
+          img_base64=$(base64 "$img")
+
+          # Embed the base64 image as an image tag in the README.md
+          echo "![${fname}](data:image/png;base64,${img_base64})" >> "models/README.md"
         done
 
     - name: Commit README.md
