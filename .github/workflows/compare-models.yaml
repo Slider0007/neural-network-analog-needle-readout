@@ -66,27 +66,26 @@ jobs:
           -p Output_Dir "${{ env.MODELDIR }}" \
           --log-output --log-level INFO --progress-bar
 
-    - name: Add PNG images to models/README.md
+    - name: Save comparision images and update readme
       run: |
-        echo -e "## Model Comparison\n" >> "models/README.md"
+        mkdir -p models/_comparison_images
+        cp "${{ env.MODELDIR }}"/*.png models/_comparison_images/
 
-        for img in $(ls "${{ env.MODELDIR }}"/*.png | sort); do
+        echo "## Model Comparison" > models/README.md
+        for img in $(ls models/_comparison_images/*.png | sort); do
           fname=$(basename "$img")
-          
-          # Base64 encode the image
-          img_base64=$(base64 "$img")
-
-          # Embed the base64 image as an image tag in the README.md
-          echo "![${fname}](data:image/png;base64,${img_base64})" >> "models/README.md"
+          echo "![${fname}](_comparison_images/${fname})" >> models/README.md
         done
 
-    - name: Commit README.md
+    - name: Commit model comparision
       uses: EndBug/add-and-commit@v9
       with:
         author_name: 'github-actions[bot]'
         author_email: 'github-actions[bot]@users.noreply.github.com'
-        message: 'Update model comparison (/models/README.md)'
-        add: 'models/README.md'
+        message: 'Update model comparison'
+        add: |
+          models/README.md
+          models/comparison_images/*.png
 
     - name: Push changes
       run: |
