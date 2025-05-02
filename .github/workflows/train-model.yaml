@@ -211,4 +211,5 @@ jobs:
       if: ${{ github.event.inputs.commit_to_branch == 'true' && github.ref != 'refs/heads/main' }}
       uses: peter-evans/repository-dispatch@v3
       with:
-        event-type: compare-models-after-train
+        token: ${{ secrets.GITHUB_TOKEN }}
+        event-type: compare-models

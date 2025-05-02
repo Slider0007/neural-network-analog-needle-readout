@@ -6,7 +6,7 @@ on:
       - 'main'
   workflow_dispatch:
   repository_dispatch:
-    types: [compare-models-after-train]
+    types: [compare-models]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
