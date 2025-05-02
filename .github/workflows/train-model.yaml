@@ -128,7 +128,7 @@ jobs:
         output_notebook="${{ env.MODELDIR }}/${{ env.NOTEBOOK_BASENAME }}_result_v${{ env.MODELVERSION }}.ipynb"
 
         papermill "${{ env.NOTEBOOK }}" "$output_notebook" \
-          -p TFlite_Version "\"${{ env.MODELVERSION }}\"" \
+          -p TFlite_Version "${{ env.MODELVERSION }}" \
           -p Output_Dir "${{ env.MODELDIR }}" \
           --log-output --log-level INFO --progress-bar
         
