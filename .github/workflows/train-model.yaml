@@ -38,6 +38,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
 
+permissions:
+  repository_dispatch: write  # Required to run "Compare Model" action after training
+
 jobs:
   run-notebook:
     runs-on: ubuntu-latest
