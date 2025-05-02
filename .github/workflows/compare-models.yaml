@@ -85,7 +85,7 @@ jobs:
         message: 'Update model comparison'
         add: |
           models/README.md
-          models/comparison_images/*.png
+          models/_comparison_images/*.png
 
     - name: Push changes
       run: |
