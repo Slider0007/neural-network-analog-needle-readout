@@ -195,4 +195,6 @@ jobs:
         
         git add models/
         git commit -m "Add models from ${{ env.NOTEBOOK_MODELTYPE }}_v${{ env.MODELVERSION }}"
+        
+        git pull --rebase
         git push
