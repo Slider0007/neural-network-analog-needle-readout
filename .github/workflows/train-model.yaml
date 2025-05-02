@@ -97,6 +97,15 @@ jobs:
         
         # Set model version
         version=${{ github.event.inputs.tflite_version }}
+        
+        # Check if the version is numeric
+        if [[ "$version" =~ ^[0-9]+$ ]]; then
+          # If the numeric version is shorter than 4 characters, pad with leading zeros
+          if [ ${#version} -lt 4 ]; then
+            version=$(printf "%04d" "$version")
+          fi
+        fi
+
         echo "MODELVERSION=$version" >> $GITHUB_ENV
 
         
