@@ -7,6 +7,8 @@
 ![ana-class100_10-orig-regularizer_s1_q.tflite.png](_comparison_images/ana-class100_10-orig-regularizer_s1_q.tflite.png)
 ![ana-class100_11-relabeled_s1.tflite.png](_comparison_images/ana-class100_11-relabeled_s1.tflite.png)
 ![ana-class100_11-relabeled_s1_q.tflite.png](_comparison_images/ana-class100_11-relabeled_s1_q.tflite.png)
+![ana-class100_12-dropout-lower_s1.tflite.png](_comparison_images/ana-class100_12-dropout-lower_s1.tflite.png)
+![ana-class100_12-dropout-lower_s1_q.tflite.png](_comparison_images/ana-class100_12-dropout-lower_s1_q.tflite.png)
 ![ana-class100_2_s1.tflite.png](_comparison_images/ana-class100_2_s1.tflite.png)
 ![ana-class100_2_s1_q.tflite.png](_comparison_images/ana-class100_2_s1_q.tflite.png)
 ![ana-class100_3_s1.tflite.png](_comparison_images/ana-class100_3_s1.tflite.png)
