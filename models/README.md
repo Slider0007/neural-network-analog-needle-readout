@@ -11,6 +11,8 @@
 ![ana-class100_12-addlayer_s1_q.tflite.png](_comparison_images/ana-class100_12-addlayer_s1_q.tflite.png)
 ![ana-class100_12-dropout-lower_s1.tflite.png](_comparison_images/ana-class100_12-dropout-lower_s1.tflite.png)
 ![ana-class100_12-dropout-lower_s1_q.tflite.png](_comparison_images/ana-class100_12-dropout-lower_s1_q.tflite.png)
+![ana-class100_13-batchsize32_s1.tflite.png](_comparison_images/ana-class100_13-batchsize32_s1.tflite.png)
+![ana-class100_13-batchsize32_s1_q.tflite.png](_comparison_images/ana-class100_13-batchsize32_s1_q.tflite.png)
 ![ana-class100_2_s1.tflite.png](_comparison_images/ana-class100_2_s1.tflite.png)
 ![ana-class100_2_s1_q.tflite.png](_comparison_images/ana-class100_2_s1_q.tflite.png)
 ![ana-class100_3_s1.tflite.png](_comparison_images/ana-class100_3_s1.tflite.png)
