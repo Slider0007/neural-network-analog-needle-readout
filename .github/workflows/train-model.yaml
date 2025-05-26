@@ -128,18 +128,22 @@ jobs:
       run: |
         set -euxo pipefail
 
-        echo "RAWIMAGEDIR=${{ github.event.inputs.rawimage_dir || 'data_raw_all' }}" >> $GITHUB_ENV
+        RAWIMAGEDIR="${{ github.event.inputs.rawimage_dir }}"
+        RAWIMAGEDIR="${RAWIMAGEDIR:-data_raw_all}"
+        echo "RAWIMAGEDIR=$RAWIMAGEDIR" >> $GITHUB_ENV
 
-        mkdir -p data_resize_all models_tmp
         echo "DATASETDIR=data_resize_all" >> $GITHUB_ENV
         echo "MODELDIR=models_tmp" >> $GITHUB_ENV
-        echo "TRAINING_DETAILS=models_tmp/training_details/${{ env.NOTEBOOK_MODELTYPE }}_${{ env.MODELVERSION }}_${{ github.event.inputs.tflite_size }}" >> $GITHUB_ENV
+        mkdir -p data_resize_all models_tmp
+
+        DETAILS_PATH="models_tmp/training_details/${{ env.NOTEBOOK_MODELTYPE }}_${{ env.MODELVERSION }}_${{ github.event.inputs.tflite_size }}"
+        echo "TRAINING_DETAILS=$DETAILS_PATH" >> $GITHUB_ENV
+        mkdir -p "$DETAILS_PATH"
 
     - name: Prepare image dataset
       run: |
         set -euxo pipefail
         source "$PWD/.venv/bin/activate"
-
 
         output_notebook="${{ env.TRAINING_DETAILS }}/01_Image-Preparation_${{ env.MODELVERSION }}_${{ github.event.inputs.tflite_size }}_result.ipynb"
 
