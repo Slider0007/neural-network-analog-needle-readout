@@ -176,7 +176,7 @@ jobs:
     - name: Upload model artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ env.NOTEBOOK_MODELTYPE }}_v${{ env.MODELVERSION }}
+        name: ${{ env.NOTEBOOK_MODELTYPE }}_v${{ env.MODELVERSION }}_${{ github.event.inputs.tflite_size }}
         path: ${{ env.MODELDIR }}/
 
     - name: Commit results to branch (if enabled)
@@ -202,7 +202,7 @@ jobs:
             mkdir -p "$dest"
             mv "$filepath" "$dest/"
           else
-            detail_dir="$dest/training_details/${{ env.NOTEBOOK_MODELTYPE }}_v${{ env.MODELVERSION }}_${{ github.event.inputs.tflite_size }}"
+            detail_dir="$dest/training_details/${{ env.NOTEBOOK_MODELTYPE }}_${{ env.MODELVERSION }}_${{ github.event.inputs.tflite_size }}"
             mkdir -p "$detail_dir"
             mv "$filepath" "$detail_dir/"
           fi
@@ -211,7 +211,7 @@ jobs:
         rm -rf "${{ env.MODELDIR }}"
         
         git add models/
-        git commit -m "Add models from ${{ env.NOTEBOOK_MODELTYPE }}_v${{ env.MODELVERSION }}_${{ github.event.inputs.tflite_size }}"
+        git commit -m "Add models from ${{ env.NOTEBOOK_MODELTYPE }}_${{ env.MODELVERSION }}_${{ github.event.inputs.tflite_size }}"
         
         git pull --rebase
         git push
