@@ -24,6 +24,7 @@ on:
           - "s1"
           - "s2"
           - "s3"
+        default: "s1"
       tflite_version:
         description: 'Model Version: Enter model version (e.g. 0100 -> 01.00)'
         required: true
@@ -135,7 +136,7 @@ jobs:
         set -euxo pipefail
         source "$PWD/.venv/bin/activate"
 
-        output_notebook="${{ env.MODELDIR }}/01_Image-Preparation_result_v${{ env.MODELVERSION }}_${{ github.event.inputs.tflite_size }}.ipynb"
+        output_notebook="${{ env.MODELDIR }}/01_Image-Preparation_${{ env.MODELVERSION }}_${{ github.event.inputs.tflite_size }}_result.ipynb"
 
         papermill 01_Image-Preparation.ipynb "$output_notebook" \
           -p Input_Dir "${{ env.RAWIMAGEDIR }}" \
@@ -149,7 +150,7 @@ jobs:
         set -euxo pipefail
         source "$PWD/.venv/bin/activate"
 
-        output_notebook="${{ env.MODELDIR }}/${{ env.NOTEBOOK_BASENAME }}_result_v${{ env.MODELVERSION }}_${{ github.event.inputs.tflite_size }}.ipynb"
+        output_notebook="${{ env.MODELDIR }}/${{ env.NOTEBOOK_BASENAME }}_${{ env.MODELVERSION }}_${{ github.event.inputs.tflite_size }}_result.ipynb"
 
         papermill "${{ env.NOTEBOOK }}" "$output_notebook" \
           -p TFlite_Version "${{ env.MODELVERSION }}" \
@@ -164,7 +165,7 @@ jobs:
         set -euxo pipefail
         source "$PWD/.venv/bin/activate"
 
-        output_notebook="${{ env.MODELDIR }}/03_Compare_Models_result_v${{ env.MODELVERSION }}_${{ github.event.inputs.tflite_size }}.ipynb"
+        output_notebook="${{ env.MODELDIR }}/03_Compare_Models_${{ env.MODELVERSION }}_${{ github.event.inputs.tflite_size }}_result.ipynb"
 
         papermill 03_Compare_Models.ipynb "$output_notebook" \
           -p Input_Dir "${{ env.RAWIMAGEDIR }}" \
