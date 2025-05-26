@@ -4,21 +4,26 @@ on:
   workflow_dispatch:
     inputs:
       script_choice:
-        description: 'Select a notebook'
+        description: 'Model Type: Select a model / notebook'
         required: true
         type: choice
         options:
-          - "02_Train-CNN_ana-cont_s0.ipynb"
-          - "02_Train-CNN_ana-cont_s1.ipynb"
-          - "02_Train-CNN_ana-cont_s2.ipynb"
-          - "02_Train-CNN_ana-cont_s3.ipynb"
-          - "02_Train_CNN_ana-class100_s1.ipynb"
-          - "02_Train_CNN_ana-class100_s2.ipynb"
+          - "02_Train-CNN_ana-cont.ipynb"
+          - "02_Train_CNN_ana-class100.ipynb"
           - "Custom Notebook Name"
       custom_name:
         description: 'Custom Notebook Name: Enter the full notebook name (optional)'
         required: false
         type: string
+      tflite_size:
+        description: 'Model Size: Select model size (Availability depending on model type)'
+        required: true
+        type: choice
+        options:
+          - "s0"
+          - "s1"
+          - "s2"
+          - "s3"
       tflite_version:
         description: 'Model Version: Enter model version (e.g. 0100 -> 01.00)'
         required: true
@@ -130,7 +135,7 @@ jobs:
         set -euxo pipefail
         source "$PWD/.venv/bin/activate"
 
-        output_notebook="${{ env.MODELDIR }}/01_Image-Preparation_result_v${{ env.MODELVERSION }}.ipynb"
+        output_notebook="${{ env.MODELDIR }}/01_Image-Preparation_result_v${{ env.MODELVERSION }}_${{ github.event.inputs.tflite_size }}.ipynb"
 
         papermill 01_Image-Preparation.ipynb "$output_notebook" \
           -p Input_Dir "${{ env.RAWIMAGEDIR }}" \
@@ -144,10 +149,11 @@ jobs:
         set -euxo pipefail
         source "$PWD/.venv/bin/activate"
 
-        output_notebook="${{ env.MODELDIR }}/${{ env.NOTEBOOK_BASENAME }}_result_v${{ env.MODELVERSION }}.ipynb"
+        output_notebook="${{ env.MODELDIR }}/${{ env.NOTEBOOK_BASENAME }}_result_v${{ env.MODELVERSION }}_${{ github.event.inputs.tflite_size }}.ipynb"
 
         papermill "${{ env.NOTEBOOK }}" "$output_notebook" \
           -p TFlite_Version "${{ env.MODELVERSION }}" \
+          -p TFlite_Size "${{ github.event.inputs.tflite_size }}" \
           -p Output_Dir "${{ env.MODELDIR }}" \
           --log-output --log-level INFO --progress-bar
         
@@ -158,7 +164,7 @@ jobs:
         set -euxo pipefail
         source "$PWD/.venv/bin/activate"
 
-        output_notebook="${{ env.MODELDIR }}/03_Compare_Models_result_v${{ env.MODELVERSION }}.ipynb"
+        output_notebook="${{ env.MODELDIR }}/03_Compare_Models_result_v${{ env.MODELVERSION }}_${{ github.event.inputs.tflite_size }}.ipynb"
 
         papermill 03_Compare_Models.ipynb "$output_notebook" \
           -p Input_Dir "${{ env.RAWIMAGEDIR }}" \
@@ -195,7 +201,7 @@ jobs:
             mkdir -p "$dest"
             mv "$filepath" "$dest/"
           else
-            detail_dir="$dest/training_details/${{ env.NOTEBOOK_MODELTYPE }}_v${{ env.MODELVERSION }}"
+            detail_dir="$dest/training_details/${{ env.NOTEBOOK_MODELTYPE }}_v${{ env.MODELVERSION }}_${{ github.event.inputs.tflite_size }}"
             mkdir -p "$detail_dir"
             mv "$filepath" "$detail_dir/"
           fi
@@ -204,7 +210,7 @@ jobs:
         rm -rf "${{ env.MODELDIR }}"
         
         git add models/
-        git commit -m "Add models from ${{ env.NOTEBOOK_MODELTYPE }}_v${{ env.MODELVERSION }}"
+        git commit -m "Add models from ${{ env.NOTEBOOK_MODELTYPE }}_v${{ env.MODELVERSION }}_${{ github.event.inputs.tflite_size }}"
         
         git pull --rebase
         git push
