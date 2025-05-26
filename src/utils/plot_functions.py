@@ -69,6 +69,8 @@ def GetValueFromVektor10(_val):
         fitvalue = _val[catmax] + _val[catmaxminus]
     return result_ist
 
+
+# Plot analog dataset (with class label)
 def plot_dataset_analog(data_iter, columns=9, rows=5):
 
     fig = plt.figure(figsize=(18, 11*rows/5))
@@ -87,6 +89,26 @@ def plot_dataset_analog(data_iter, columns=9, rows=5):
         ax=plt.gca()
         ax.get_xaxis().set_visible(False)
         ax.get_yaxis().set_visible(False) 
+    plt.show()
+
+
+## Plot analog result dataset (with predicted, expected and filename label)
+def plot_dataset_analog_result(images, labels, columns=10, rows=5, figsize=(18, 10)):
+
+    fig = plt.figure(figsize=figsize)
+    
+    for i in range(1, columns*rows +1):
+        if (i>len(labels)):
+            break
+        fig.add_subplot(rows, columns, i)
+        plt.title(labels[i-1])  # set title
+        plt.imshow((images[i-1]).astype(np.uint8), aspect='1', extent=[0, 1, 0, 1])
+        # yellow lines
+        ax=plt.gca()
+        ax.get_yaxis().set_visible(False) 
+        ax.get_xaxis().set_visible(False) 
+        
+        plt.tight_layout()
     plt.show()
 
 
@@ -161,13 +183,19 @@ def plot_acc_loss(history, modelname="modelname"):
     plt.show()
 
 
-def plot_divergence(divergationset, title1, nb_classes):
+def plot_divergence(divergationset, title, filename=None):
     fig = plt.figure(figsize=(40, 10))
-    fig.suptitle(title1)
-    plt.bar(np.arange (0, nb_classes/10, 0.1), divergationset, width=0.09, align='center')
-    plt.ylabel('count')
-    plt.xlabel('digit class')
-    plt.xticks(np.arange(0, nb_classes/10, 0.1))
+    fig.suptitle(title, fontsize=28)
+    plt.bar(np.arange(0, len(divergationset)/10, 0.1), divergationset, width=0.09, align='center')
+    plt.ylabel('Count')
+    plt.xlabel('Deviation')
+    plt.xticks(np.arange(0, len(divergationset)/10, 0.1))
+    plt.show()
+    
+    # Save plot
+    if filename:
+        fig.savefig(filename, bbox_inches='tight')
+    
     return fig
 
 
