@@ -124,33 +124,38 @@ jobs:
 
         echo "MODELVERSION=$version" >> $GITHUB_ENV
 
-        
-        # Prepare folders
+    - name: Prepare folders
+      run: |
+        set -euxo pipefail
+
         echo "RAWIMAGEDIR=${{ github.event.inputs.rawimage_dir || 'data_raw_all' }}" >> $GITHUB_ENV
+
         mkdir -p data_resize_all models_tmp
         echo "DATASETDIR=data_resize_all" >> $GITHUB_ENV
         echo "MODELDIR=models_tmp" >> $GITHUB_ENV
+        echo "TRAINING_DETAILS=models_tmp/training_details/${{ env.NOTEBOOK_MODELTYPE }}_${{ env.MODELVERSION }}_${{ github.event.inputs.tflite_size }}" >> $GITHUB_ENV
 
     - name: Prepare image dataset
       run: |
         set -euxo pipefail
         source "$PWD/.venv/bin/activate"
 
-        output_notebook="${{ env.MODELDIR }}/01_Image-Preparation_${{ env.MODELVERSION }}_${{ github.event.inputs.tflite_size }}_result.ipynb"
+
+        output_notebook="${{ env.TRAINING_DETAILS }}/01_Image-Preparation_${{ env.MODELVERSION }}_${{ github.event.inputs.tflite_size }}_result.ipynb"
 
         papermill 01_Image-Preparation.ipynb "$output_notebook" \
           -p Input_Dir "${{ env.RAWIMAGEDIR }}" \
           -p Output_Dir "${{ env.DATASETDIR }}" \
           --log-output --log-level INFO --progress-bar
         
-        jupyter nbconvert "$output_notebook" --to html --output-dir="${{ env.MODELDIR }}"
+        jupyter nbconvert "$output_notebook" --to html --output-dir="${{ env.TRAINING_DETAILS }}"
 
     - name: Train model
       run: |
         set -euxo pipefail
         source "$PWD/.venv/bin/activate"
 
-        output_notebook="${{ env.MODELDIR }}/${{ env.NOTEBOOK_BASENAME }}_${{ env.MODELVERSION }}_${{ github.event.inputs.tflite_size }}_result.ipynb"
+        output_notebook="${{ env.TRAINING_DETAILS }}/${{ env.NOTEBOOK_BASENAME }}_${{ env.MODELVERSION }}_${{ github.event.inputs.tflite_size }}_result.ipynb"
 
         papermill "${{ env.NOTEBOOK }}" "$output_notebook" \
           -p TFlite_Version "${{ env.MODELVERSION }}" \
@@ -158,20 +163,20 @@ jobs:
           -p Output_Dir "${{ env.MODELDIR }}" \
           --log-output --log-level INFO --progress-bar
         
-        jupyter nbconvert "$output_notebook" --to html --output-dir="${{ env.MODELDIR }}"
+        jupyter nbconvert "$output_notebook" --to html --output-dir="${{ env.TRAINING_DETAILS }}"
 
     - name: Compare models
       run: |
         set -euxo pipefail
         source "$PWD/.venv/bin/activate"
 
-        output_notebook="${{ env.MODELDIR }}/03_Compare_Models_${{ env.MODELVERSION }}_${{ github.event.inputs.tflite_size }}_result.ipynb"
+        output_notebook="${{ env.TRAINING_DETAILS }}/03_Compare_Models_${{ env.MODELVERSION }}_${{ github.event.inputs.tflite_size }}_result.ipynb"
 
         papermill 03_Compare_Models.ipynb "$output_notebook" \
           -p Input_Dir "${{ env.RAWIMAGEDIR }}" \
           --log-output --log-level INFO --progress-bar
         
-        jupyter nbconvert "$output_notebook" --to html --output-dir="${{ env.MODELDIR }}"
+        jupyter nbconvert "$output_notebook" --to html --output-dir="${{ env.TRAINING_DETAILS }}"
 
     - name: Upload model artifacts
       uses: actions/upload-artifact@v4
@@ -189,24 +194,12 @@ jobs:
 
         mkdir -p models
         subfolder=""
-        tflite_file=$(find "${{ env.MODELDIR }}" -name "*.tflite" | head -n 1)
+        tflite_file=$(find "${{ env.MODELDIR }}" -maxdepth 1 -name "*.tflite" | head -n 1)
         [[ "$tflite_file" == *"ana-cont"* ]] && subfolder="ana-cont"
         [[ "$tflite_file" == *"ana-class100"* ]] && subfolder="ana-class100"
         dest="models${subfolder:+/$subfolder}"
 
-        find "${{ env.MODELDIR }}" -type f | while read -r filepath; do
-          filename=$(basename "$filepath")
-          ext="${filename##*.}"
-
-          if [[ "$ext" == "tflite" ]]; then
-            mkdir -p "$dest"
-            mv "$filepath" "$dest/"
-          else
-            detail_dir="$dest/training_details/${{ env.NOTEBOOK_MODELTYPE }}_${{ env.MODELVERSION }}_${{ github.event.inputs.tflite_size }}"
-            mkdir -p "$detail_dir"
-            mv "$filepath" "$detail_dir/"
-          fi
-        done
+        rsync -a "${{ env.MODELDIR }}/" "$dest/"
 
         rm -rf "${{ env.MODELDIR }}"
         
