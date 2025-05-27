@@ -63,14 +63,6 @@ jobs:
       with:
         python-version: '3.11'
 
-    - name: Cache virtual environment
-      uses: actions/cache@v4
-      with:
-        path: .venv
-        key: ${{ runner.os }}-venv-${{ hashFiles('requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-venv-
-
     - name: Install dependencies
       run: |
         set -euxo pipefail
