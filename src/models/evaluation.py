@@ -75,7 +75,7 @@ def get_false_predictions(expected_val, predicted_val, deviation_val, x_data, f_
     false_predicted_files = [Path(f).name for i, f in enumerate(f_data) if false_predicted_mask[i]]
 
     false_predicted_plt_labels = [
-        f"Expected: {e}\n Predicted: {p}\n{Path(f).name[:-4][:20]}"
+        f"Expected: {float(e):.1f}\n Predicted: {float(p):.1f}\n{Path(f).name[:-4][:20]}"
         for e, p, f in zip(
             false_predicted_expected_values,
             false_predicted_pred_values,
