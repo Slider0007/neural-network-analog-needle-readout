@@ -177,7 +177,7 @@ jobs:
     - name: Upload model artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ env.NOTEBOOK_MODELTYPE }}_v${{ env.MODELVERSION }}_${{ github.event.inputs.tflite_size }}
+        name: ${{ env.NOTEBOOK_MODELTYPE }}_${{ env.MODELVERSION }}_${{ github.event.inputs.tflite_size }}
         path: ${{ env.MODELDIR }}/
 
     - name: Commit results to branch (if enabled)
