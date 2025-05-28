@@ -7511,20 +7511,22 @@ a.anchor-link {
 <!-- End of mermaid configuration --></head>
 <body class="jp-Notebook" data-jp-theme-light="true" data-jp-theme-name="JupyterLab Light">
 <main>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=7837928b">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=c6e61b55">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Image-preparation">Image preparation<a class="anchor-link" href="#Image-preparation">¶</a></h2><p>The below code can be used to transform the images in an input directory (Input_Dir)
-to the right size (e.g. 32x32 pixels) into an output directory (Output_Dir).</p>
-<p>Note: Duplicates will be removed by evaluating the file hash</p>
+<h2 id="Image-preparation">Image preparation<a class="anchor-link" href="#Image-preparation">¶</a></h2><p>Remove duplicates from input directory by evaluating the file content hash.</p>
+<ul>
+<li>Note 1: It can also be used to resize images to a defined size (e.g. 32x32 pixels) from an input directory (Input_Dir) into an output directory (Output_Dir).</li>
+<li>Note 2: It's not mandatory to resize with this notebook, because it will be performed in the training notebooks (<code>02_Train-CNN_...</code>)</li>
+</ul>
 </div>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=8681eda7">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=ad4da4e5">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -7532,14 +7534,15 @@ to the right size (e.g. 32x32 pixels) into an output directory (Output_Dir).</p>
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <h3 id="Basic-Parameter">Basic Parameter<a class="anchor-link" href="#Basic-Parameter">¶</a></h3><p>IMPORTANT: Do not rename any variables in this section — they are externally referenced in the GitHub action <code>Train Model</code>.</p>
 <ul>
-<li><code>Input_Dir</code>: Path to the input directory containing training images</li>
-<li><code>Output_Dir</code>: Path to the output directory where results (models, logs, etc.) will be saved</li>
-<li><code>Target_Shape</code>: Tuple specifying the image dimensions (width, height, channels)</li>
+<li><code>Input_Dir</code>: Path to the input directory containing unscaled training images</li>
+<li><code>Output_Dir</code>: Path to the output directory where resized and scaled images will be saved.
+<code>Save_Resized_Images</code>: Set to true to save resized images (Optional: Images will be resized in training notebook automatically)</li>
+<li><code>Input_Shape</code>: Image dimensions (width, height, channels)</li>
 </ul>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs celltag_parameters" id="cell-id=4d1e6b1f">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs celltag_parameters" id="cell-id=159cf161">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -7551,14 +7554,17 @@ to the right size (e.g. 32x32 pixels) into an output directory (Output_Dir).</p>
 <span class="n">Input_Dir</span> <span class="o">=</span> <span class="s1">'data_raw_all'</span>
 <span class="n">Output_Dir</span> <span class="o">=</span> <span class="s1">'data_resize_all'</span>
 
-<span class="c1"># Target image size [x, y, channels]</span>
-<span class="n">Target_Shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="c1"># Save resized images</span>
+<span class="n">Save_Resized_Images</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="c1"># Input image size [width, height, channels]</span>
+<span class="n">Input_Shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs celltag_injected-parameters" id="cell-id=e39d1f73">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs celltag_injected-parameters" id="cell-id=3c61285c">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -7575,17 +7581,17 @@ to the right size (e.g. 32x32 pixels) into an output directory (Output_Dir).</p>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=d59ddd5b">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=1aa8a274">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="Load-libraries-and-defaults">Load libraries and defaults<a class="anchor-link" href="#Load-libraries-and-defaults">¶</a></h3>
+<h3 id="Load-Libraries">Load Libraries<a class="anchor-link" href="#Load-Libraries">¶</a></h3>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=2d74fbd3">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=c33757d6">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -7595,10 +7601,20 @@ to the right size (e.g. 32x32 pixels) into an output directory (Output_Dir).</p>
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">glob</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">hashlib</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">tensorflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tf</span>
+
+
+<span class="c1"># Prepare folders</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">Input_Dir</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="n">Path</span><span class="p">(</span><span class="n">Input_Dir</span><span class="p">)</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()):</span> <span class="c1"># Check if input is availabe</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Folder '</span><span class="si">{</span><span class="n">Input_Dir</span><span class="si">}</span><span class="s2">' does not exist."</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="n">Save_Resized_Images</span><span class="p">):</span>
+    <span class="n">Path</span><span class="p">(</span><span class="n">Output_Dir</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># Create output folder if it doesn't exist</span>
 </pre></div>
 </div>
 </div>
@@ -7611,13 +7627,13 @@ to the right size (e.g. 32x32 pixels) into an output directory (Output_Dir).</p>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>2025-05-27 12:03:20.635790: I external/local_xla/xla/tsl/cuda/cudart_stub.cc:32] Could not find cuda drivers on your machine, GPU will not be used.
-2025-05-27 12:03:20.638889: I external/local_xla/xla/tsl/cuda/cudart_stub.cc:32] Could not find cuda drivers on your machine, GPU will not be used.
-2025-05-27 12:03:20.645253: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:477] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered
+<pre>2025-05-28 21:04:24.786453: I external/local_xla/xla/tsl/cuda/cudart_stub.cc:32] Could not find cuda drivers on your machine, GPU will not be used.
+2025-05-28 21:04:24.789442: I external/local_xla/xla/tsl/cuda/cudart_stub.cc:32] Could not find cuda drivers on your machine, GPU will not be used.
+2025-05-28 21:04:24.795783: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:477] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered
 WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
-E0000 00:00:1748347400.659520    2179 cuda_dnn.cc:8310] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered
-E0000 00:00:1748347400.663752    2179 cuda_blas.cc:1418] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
-2025-05-27 12:03:20.679584: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+E0000 00:00:1748466264.810039    2220 cuda_dnn.cc:8310] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered
+E0000 00:00:1748466264.814217    2220 cuda_blas.cc:1418] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
+2025-05-28 21:04:24.829641: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
 To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
 </pre>
 </div>
@@ -7625,17 +7641,17 @@ To enable the following instructions: AVX2 FMA, in other operations, rebuild Ten
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=7577e69c">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=303a1ed6">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="Delete-output-directory">Delete output directory<a class="anchor-link" href="#Delete-output-directory">¶</a></h3>
+<h3 id="Delete-Output-Directory-(Resized-Images)">Delete Output Directory (Resized Images)<a class="anchor-link" href="#Delete-Output-Directory-(Resized-Images)">¶</a></h3>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=296da4c7">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=51406973">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -7643,10 +7659,16 @@ To enable the following instructions: AVX2 FMA, in other operations, rebuild Ten
 <div class="jp-InputPrompt jp-InputArea-prompt">In [4]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="n">files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">Output_Dir</span> <span class="o">+</span> <span class="s1">'/*.jpg'</span><span class="p">)</span>
-<span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">))</span> <span class="o">+</span> <span class="s2">" files have been deleted."</span><span class="p">)</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">Output_Dir</span><span class="p">):</span>
+    <span class="n">files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">Output_Dir</span> <span class="o">+</span> <span class="s1">'/*.jpg'</span><span class="p">)</span>
+
+    <span class="c1"># Delete files</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">))</span> <span class="o">+</span> <span class="s2">" files have been deleted."</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No files have been deleted."</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -7666,17 +7688,17 @@ To enable the following instructions: AVX2 FMA, in other operations, rebuild Ten
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=c0affea6">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=234d5319">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="Load-files-and-resize">Load files and resize<a class="anchor-link" href="#Load-files-and-resize">¶</a></h3>
+<h3 id="Load-Files-and-Hash-Data-(optional:-Resize-Images)">Load Files and Hash Data (optional: Resize Images)<a class="anchor-link" href="#Load-Files-and-Hash-Data-(optional:-Resize-Images)">¶</a></h3>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=a5d3b945">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=b0c9c6e5">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -7687,31 +7709,41 @@ To enable the following instructions: AVX2 FMA, in other operations, rebuild Ten
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">Input_Dir</span> <span class="o">+</span> <span class="s1">'/*.jpg'</span><span class="p">)</span>
 <span class="n">hashes</span> <span class="o">=</span> <span class="p">{}</span>
 
-<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">aktfile</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">files</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">500</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">aktfile</span><span class="p">)</span>
-
-    <span class="c1"># Read</span>
-    <span class="n">image_bytes</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">aktfile</span><span class="p">)</span>
-    <span class="n">image</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">decode_image</span><span class="p">(</span><span class="n">image_bytes</span><span class="p">,</span> <span class="n">channels</span><span class="o">=</span><span class="n">Target_Shape</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">expand_animations</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="c1"># Process files</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">file</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">files</span><span class="p">):</span>
+    <span class="c1"># Read image file</span>
+    <span class="n">image_bytes</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+    <span class="n">image</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">decode_image</span><span class="p">(</span><span class="n">image_bytes</span><span class="p">,</span> <span class="n">channels</span><span class="o">=</span><span class="n">Input_Shape</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">expand_animations</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="c1"># Compute SHA256 hash of image content only, not of file itself (exclude metadata, etc)</span>
     <span class="n">hash_val</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">encode_jpeg</span><span class="p">(</span><span class="n">image</span><span class="p">)</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">hash_val</span> <span class="ow">in</span> <span class="n">hashes</span><span class="p">:</span>
-        <span class="n">hashes</span><span class="p">[</span><span class="n">hash_val</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">aktfile</span><span class="p">)</span>
+        <span class="n">hashes</span><span class="p">[</span><span class="n">hash_val</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
         <span class="k">continue</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">hashes</span><span class="p">[</span><span class="n">hash_val</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">aktfile</span><span class="p">]</span>
-    
-    <span class="c1"># Resize</span>
-    <span class="n">image</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="p">[</span><span class="n">Target_Shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Target_Shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="n">method</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">ResizeMethod</span><span class="o">.</span><span class="n">MITCHELLCUBIC</span><span class="p">)</span>
-    <span class="n">image</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
-    <span class="n">image</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">encode_jpeg</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">quality</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+        <span class="n">hashes</span><span class="p">[</span><span class="n">hash_val</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">file</span><span class="p">]</span>
 
-    <span class="c1"># Save</span>
-    <span class="n">base</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">aktfile</span><span class="p">)</span>
-    <span class="n">save_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Output_Dir</span><span class="p">,</span> <span class="n">base</span><span class="p">)</span>
-    <span class="n">tf</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">write_file</span><span class="p">(</span><span class="n">save_path</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+    <span class="c1"># Resize only if activated (only for visualization and debug purpose)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">Save_Resized_Images</span><span class="p">):</span>
+        <span class="c1"># Process resizing (result: float)</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="p">[</span><span class="n">Input_Shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Input_Shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="n">method</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">ResizeMethod</span><span class="o">.</span><span class="n">MITCHELLCUBIC</span><span class="p">)</span>
+        <span class="c1"># Cast to uint8 (to be close to resizing behaviour using STB library on ESP32)</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">clip_by_value</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">255.0</span><span class="p">)</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+    
+        <span class="c1"># Encode as JPEG</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">encode_jpeg</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">quality</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    
+        <span class="c1"># Save resized image</span>
+        <span class="n">base</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+        <span class="n">save_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Output_Dir</span><span class="p">,</span> <span class="n">base</span><span class="p">)</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">write_file</span><span class="p">(</span><span class="n">save_path</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+
+    <span class="c1"># Log every 500th image</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">500</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">" </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> files processed..."</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Completed. </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2"> files processed"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -7724,52 +7756,59 @@ To enable the following instructions: AVX2 FMA, in other operations, rebuild Ten
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>0 data_raw_all/6.1_a1500e3f3187c4cede044a4487e02b7d.jpg
+<pre> 0 files processed...
 </pre>
 </div>
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>2025-05-27 12:03:25.021377: E external/local_xla/xla/stream_executor/cuda/cuda_driver.cc:152] failed call to cuInit: INTERNAL: CUDA error: Failed call to cuInit: UNKNOWN ERROR (303)
+<pre>2025-05-28 21:04:28.266773: E external/local_xla/xla/stream_executor/cuda/cuda_driver.cc:152] failed call to cuInit: INTERNAL: CUDA error: Failed call to cuInit: UNKNOWN ERROR (303)
 </pre>
 </div>
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>500 data_raw_all/7.0_1e781872e114eb9bb865763fa19dd893.jpg
+<pre> 500 files processed...
 </pre>
 </div>
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>1000 data_raw_all/3.2_1537_zeiger2_2019-06-01T174233.jpg
+<pre> 1000 files processed...
 </pre>
 </div>
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>1500 data_raw_all/8.5_3b3abd4281ab6190f8d3d8e8bcdf7064.jpg
+<pre> 1500 files processed...
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>Completed. 1739 files processed
 </pre>
 </div>
 </div>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=d7b7453b">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=f6b21294">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="Remove-duplicate-files">Remove duplicate files<a class="anchor-link" href="#Remove-duplicate-files">¶</a></h3>
+<h3 id="Remove-Duplicates-(from-Source-Directory)">Remove Duplicates (from Source Directory)<a class="anchor-link" href="#Remove-Duplicates-(from-Source-Directory)">¶</a></h3>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=eca5c0e9">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=4cde99d6">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -7777,14 +7816,14 @@ To enable the following instructions: AVX2 FMA, in other operations, rebuild Ten
 <div class="jp-InputPrompt jp-InputArea-prompt">In [6]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># duplicate files are a risk to the metrics, they pollute the validation dataset</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Duplicate files are a risk to the metrics, they pollute the validation dataset</span>
 <span class="k">for</span> <span class="nb">hash</span> <span class="ow">in</span> <span class="n">hashes</span><span class="p">:</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">hashes</span><span class="p">[</span><span class="nb">hash</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Duplicates: </span><span class="si">{</span><span class="n">hashes</span><span class="p">[</span><span class="nb">hash</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>    
         <span class="k">for</span> <span class="n">duplicate</span> <span class="ow">in</span> <span class="n">hashes</span><span class="p">[</span><span class="nb">hash</span><span class="p">][</span><span class="mi">1</span><span class="p">:]:</span>
-            <span class="c1"># remove all except the first</span>
+            <span class="c1"># Remove all except the first</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Removed: </span><span class="si">{</span><span class="n">duplicate</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">duplicate</span><span class="p">)</span>    
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">duplicate</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
