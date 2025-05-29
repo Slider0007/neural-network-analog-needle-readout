@@ -8,9 +8,9 @@ from tensorflow.keras.optimizers import Adam
 
 def model_ana_class100_s1(input_shape=(32, 32, 3), learning_rate=1e-3):
     input = Input(shape=input_shape)
-    x = Rescaling(1./255)(input)
+    #x = Rescaling(1./255)(input)
     
-    x = BatchNormalization()(x)
+    x = BatchNormalization()(input)
     x = Conv2D(64, (5, 5), padding='same', activation='relu')(x)
     x = Conv2D(64, (1, 1), padding='same', activation='relu')(x)
 
@@ -56,9 +56,9 @@ def model_ana_class100_s1(input_shape=(32, 32, 3), learning_rate=1e-3):
 
 def model_ana_class100_s2(input_shape=(32, 32, 3), learning_rate=1e-3):
     input = Input(shape=input_shape)
-    x = Rescaling(1./255)(input)
+    #x = Rescaling(1./255)(input)
 
-    x = BatchNormalization()(x)
+    x = BatchNormalization()(input)
     x = Conv2D(32, (5, 5), padding='same', activation="relu")(x)
 
     x = BatchNormalization()(x)

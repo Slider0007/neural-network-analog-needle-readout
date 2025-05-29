@@ -9,9 +9,9 @@ from tensorflow.keras.optimizers import Adam
 
 def model_ana_cont_s0(input_shape=(32, 32, 3), learning_rate=1e-3):
     input = Input(shape=input_shape)
-    x = Rescaling(1./255)(input)
+    #x = Rescaling(1./255)(input)
 
-    x = BatchNormalization()(x)
+    x = BatchNormalization()(input)
     x = Conv2D(16, (3, 3), padding='same', activation="relu")(x)
     x = MaxPool2D(pool_size=(2, 2))(x)
 
@@ -52,9 +52,9 @@ def model_ana_cont_s0(input_shape=(32, 32, 3), learning_rate=1e-3):
 
 def model_ana_cont_s1(input_shape=(32, 32, 3), learning_rate=1e-3):
     input = Input(shape=input_shape)
-    x = Rescaling(1./255)(input)
+    #x = Rescaling(1./255)(input)
 
-    x = BatchNormalization()(x)
+    x = BatchNormalization()(input)
     x = Conv2D(16, (3, 3), padding='same', activation="relu")(x)
     x = MaxPool2D(pool_size=(2, 2))(x)
 
@@ -93,9 +93,9 @@ def model_ana_cont_s1(input_shape=(32, 32, 3), learning_rate=1e-3):
 
 def model_ana_cont_s2(input_shape=(32, 32, 3), learning_rate=1e-3):
     input = Input(shape=input_shape)
-    x = Rescaling(1./255)(input)
+    #x = Rescaling(1./255)(input)
 
-    x = BatchNormalization()(x)
+    x = BatchNormalization()(input)
     x = Conv2D(16, (3, 3), padding='same', activation="relu")(x)
     x = MaxPool2D(pool_size=(2, 2))(x)
 
@@ -134,9 +134,9 @@ def model_ana_cont_s2(input_shape=(32, 32, 3), learning_rate=1e-3):
 
 def model_ana_cont_s3(input_shape=(32, 32, 3), learning_rate=1e-3):
     input = Input(shape=input_shape)
-    x = Rescaling(1./255)(input)
+    #x = Rescaling(1./255)(input)
 
-    x = BatchNormalization()(x)
+    x = BatchNormalization()(input)
     x = Conv2D(16, (3, 3), padding='same', activation="relu")(x)
     x = MaxPool2D(pool_size=(2, 2))(x)
 
