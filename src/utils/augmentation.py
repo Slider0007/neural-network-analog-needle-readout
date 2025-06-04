@@ -15,7 +15,7 @@ def random_invert_image(x, probability_invert=0.2):
     return 255 - x  # Invert image
 
 
-def random_white_balance(x, strength_range=(0.9, 1.1)):
+def random_white_balance(x, strength_range=(0.8, 1.2)):
     """
     Simulates poor white balance by randomly scaling RGB channels independently.
     strength_range controls how strong the color cast distortion is.

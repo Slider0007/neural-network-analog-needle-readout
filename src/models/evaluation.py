@@ -5,13 +5,13 @@ import math
 
 def predict_and_evaluate(model, x_data, y_data, y_data_target=None):
     """
-    Predict and compute deviation based on the model type.
+    Predict and compute deviation based on the model type
 
     Parameters:
-    - model: trained model
-    - x_data: input data (images)
-    - y_data: expected labels (scaled 0-1 for class100, 0-1 for ana-cont)
-    - y_data_target: only needed for 'ana-cont' (unscaled ground truth in [0, 1])
+    - model: model
+    - x_data: Image data
+    - y_data: expected labels (ana-class100: real values, ana-cont: sin/cos values)
+    - y_data_target: ana-cont only: real values
 
     Returns:
     - predicted_val, expected_val, deviation_val
@@ -52,10 +52,10 @@ def predict_and_evaluate(model, x_data, y_data, y_data_target=None):
 
 def get_false_predictions(expected_val, predicted_val, deviation_val, x_data, f_data, accepted_deviation=0.1):
     """
-    Filters and returns false predictions sorted by deviation.
+    Filters and returns false predictions sorted by deviation
 
     Args:
-        expected_val (np.ndarray): Ground truth values
+        expected_val (np.ndarray): Expected values
         predicted_val (np.ndarray): Model predicted values
         deviation_val (np.ndarray): Deviations between predicted and expected
         x_data (np.ndarray): Image data

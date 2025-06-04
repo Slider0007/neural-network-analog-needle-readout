@@ -1,14 +1,13 @@
 import tensorflow as tf
 
 from tensorflow.keras.models import Model
-from tensorflow.keras.layers import (Input, Rescaling, BatchNormalization, Conv2D, MaxPool2D,
+from tensorflow.keras.layers import (Input, BatchNormalization, Conv2D, MaxPool2D,
                                      Dropout, Flatten, Dense)
 from tensorflow.keras.optimizers import Adam
 
 
 def model_ana_class100_s1(input_shape=(32, 32, 3), learning_rate=1e-3):
     input = Input(shape=input_shape)
-    #x = Rescaling(1./255)(input)
     
     x = BatchNormalization()(input)
     x = Conv2D(64, (5, 5), padding='same', activation='relu')(x)
@@ -56,7 +55,6 @@ def model_ana_class100_s1(input_shape=(32, 32, 3), learning_rate=1e-3):
 
 def model_ana_class100_s2(input_shape=(32, 32, 3), learning_rate=1e-3):
     input = Input(shape=input_shape)
-    #x = Rescaling(1./255)(input)
 
     x = BatchNormalization()(input)
     x = Conv2D(32, (5, 5), padding='same', activation="relu")(x)
